@@ -25,6 +25,9 @@ StylusProcessor.prototype = {
       source: code,
       code: codeRes
     };
+    if (this.cube.fixupResPath) {
+      res.code = this.cube.fixupResPath(path.dirname(options.qpath), res.code);
+    }
     if (options.moduleWrap) {
       res.wraped = this.cube.wrapStyle(options.qpath, codeRes);
     }
