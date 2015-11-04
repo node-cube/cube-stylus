@@ -19,6 +19,8 @@ StylusProcessor.prototype = {
     try {
       codeRes = stylus.render(code, {compress: options.compress});
     } catch (e) {
+      e.code = 'Styl_Parse_Error';
+      e.message = 'File:' + file + ' ' + e.message;
       return callback(e);
     }
     var res = {

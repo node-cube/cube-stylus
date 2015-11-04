@@ -57,6 +57,7 @@ describe('cube-styl', function () {
     var processor = new TestMod(cube);
     processor.process('/test_err.styl', options, function (err, res) {
       expect(err).to.be.ok();
+      expect(err.code).to.be('Styl_Parse_Error');
       done();
     });
   });
