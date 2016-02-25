@@ -1,25 +1,32 @@
 var TestMod = require('../index');
 var expect = require('expect.js');
+var fs = require('fs');
+var path = require('path');
 
 describe('cube-styl', function () {
   it('expect info', function () {
-    expect(TestMod.info.type).to.be('style');
-    expect(TestMod.info.ext).to.be('.styl');
+    expect(TestMod.type).to.be('style');
+    expect(TestMod.ext).to.be('.styl');
   });
   it('expect processor styl file fine', function (done) {
-    var options = {
-      release: false,
-      moduleWrap: true,
-      compress: true,
-      qpath: '/test.styl',
-      root: __dirname
+    var file = '/test.styl';
+    var code = fs.readFileSync(path.join(__dirname, file)).toString();
+    var data = {
+      queryPath: '/test.styl',
+      code: code,
+      source: code
     };
     var cube = {
-      config: options,
+      config: {
+        release: false,
+        moduleWrap: true,
+        compress: true
+      },
       wrapStyle: function (qpath, code) {
         return 'Cube("' + qpath + '", [], function(m){m.exports=' + JSON.stringify(code) + ';return m.exports});';
       }
     };
+
     function Cube(mod, requires, cb) {
       expect(mod).to.be('/test.styl');
       expect(requires).to.eql([]);
@@ -28,12 +35,13 @@ describe('cube-styl', function () {
       done();
     }
     var processor = new TestMod(cube);
-    processor.process('/test.styl', options, function (err, res) {
+    processor.process(data, function (err, res) {
       expect(err).to.be(null);
-      expect(res).have.keys(['source', 'code', 'wraped']);
+      expect(res).have.keys(['source', 'code']);
       expect(res.source).match(/\.test_styl\s+a\s*/);
       expect(res.code).to.match(/\.test_styl a\s*\{/);
-      eval(res.wraped);
+      var wraped = cube.wrapStyle(file, res.code);
+      eval(wraped);
     });
   });
 
@@ -41,23 +49,27 @@ describe('cube-styl', function () {
     require = function () {
       return {};
     };
-    var options = {
-      release: false,
-      moduleWrap: true,
-      compress: true,
-      qpath: '/test_err.styl',
-      root: __dirname
+    var file = '/test_err.styl';
+    var code = fs.readFileSync(path.join(__dirname, file)).toString();
+    var data = {
+      queryPath: '/test.styl',
+      code: code,
+      source: code
     };
     var cube = {
-      config: options,
+      config: {
+        release: false,
+        moduleWrap: true,
+        compress: true
+      },
       wrapStyle: function (qpath, code) {
         return 'Cube("' + qpath + '", [], function(m){m.exports=' + JSON.stringify(code) + ';return m.exports});';
       }
     };
     var processor = new TestMod(cube);
-    processor.process('/test_err.styl', options, function (err, res) {
+    processor.process(data, function (err, res) {
       expect(err).to.be.ok();
-      expect(err.code).to.be('Styl_Parse_Error');
+      expect(err.code).to.be('Stylus_Parse_Error');
       done();
     });
   });

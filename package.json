@@ -2,7 +2,7 @@
   "author": "fish <zhengxinlin@gmail.com> (https://github.com/fishbar)",
   "name": "cube-stylus",
   "description": "the stylus processor for cube",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "homepage": "https://github.com/node-cube/cube-stylus",
   "repository": {
     "type": "git",
@@ -16,8 +16,7 @@
     "node": ">=0.8.0"
   },
   "dependencies": {
-    "stylus": "0.52.4",
-    "debug": "1.0.3"
+    "stylus": "0.53.0"
   },
   "devDependencies": {
     "jscoverage": "0.5.x",
